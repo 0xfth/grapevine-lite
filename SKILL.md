@@ -1,3 +1,8 @@
+---
+name: voc-listener-lite
+description: Listen to YouTube comments for voice-of-customer research — define a question about any niche, sweep comment threads, and get scored real-people pain back in minutes. Free version (BYOK); Pro adds the Clef AI scorer, triage workflow, and report synthesis.
+---
+
 # voc-listener Lite skill
 
 Query the real-time collective consciousness of the internet — ask about any
