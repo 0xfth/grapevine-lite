@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voc-listener-lite"
+version = "1.0.0"
+description = "voc-listener Lite: query YouTube's comment sections like a live pulse — free, regex scoring, BYOK. Pro adds the Clef decision-model scorer, triage workflow, and report synthesis."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["youtube", "voice-of-customer", "agents", "research"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Internet",
+]
+
+[project.urls]
+# URL SCHEME PENDING DOT CONFIRMATION
+Homepage = "https://myagentlist.com/skills/voc-listener-pro"
+
+[tool.setuptools.packages.find]
+include = ["voc*"]
