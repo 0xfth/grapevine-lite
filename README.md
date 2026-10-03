@@ -1,5 +1,11 @@
 # voc-listener Lite
 
+## Install
+
+```bash
+npx skills add 0xfth/voc-listener-lite
+```
+
 A free library + skill for querying YouTube's comment sections like a live
 pulse. Your agent defines a question, sees what it will cost **before**
 spending, then sweeps most-promising-first while hits stream live as JSON
