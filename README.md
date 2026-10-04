@@ -1,85 +1,78 @@
-# voc-listener Lite
+---
+myagentlist-public-about: true
+---
 
-A free library + skill for querying YouTube's comment sections like a live
-pulse. Your agent defines a question, sees what it will cost **before**
-spending, then sweeps most-promising-first while hits stream live as JSON
-lines — killable mid-run with nothing lost.
+# Grapevine Lite
 
-**This is the free version of voc-listener** (MIT). It runs the full
-listening loop with the zero-inference regex scorer: define → estimate →
-discover → sweep → inbox. **voc-listener Pro** ($10 one-time) adds the
-Clef decision-model scorer, the triage status workflow, and one-command
-research-report synthesis:
+Grapevine Lite is a free, local tool for estimate-first research in YouTube comments. Define a question, see the expected work before querying, then review the observations that match your topic. Results stay in a local SQLite database, with source links preserved for follow-up.
 
-https://myagentlist.com/skills/voc-listener-pro
-<!-- URL SCHEME PENDING DOT CONFIRMATION -->
+The public package is version **1.0.0** and uses the **MIT License**. The installed skill and Python compatibility namespace retain their earlier names: `voc-listener-lite` and `voc`.
 
-**This is not a configured product and not a service.** Nobody's niche is
-pre-loaded. The value is leverage: `SKILL.md` teaches an agent the query
-loop, and the `voc/` package is the reusable machinery (area configs,
-pre-spend estimates, budgeted polling, relevance scoring, lossless
-watermarks, episode storage, read-only inbox).
+## Install
 
-## The 30-second version
+Add the agent skill from the public repository:
 
 ```bash
-python -m voc add-area --name sourdough --db q.db \
-  --queries "sourdough starter troubleshooting" \
-  --person-terms baker "home baker" --topic-terms sourdough starter \
-  --depth shallow
-python -m voc estimate --area sourdough --db q.db   # cost first — show the operator
-python -m voc query --area sourdough --db q.db --yes --max-new-hits 10
-# hits stream as JSONL; first insight in seconds; stop anytime
-python -m voc inbox --area sourdough --db q.db      # read the hits in chat
-python -m voc fidelity --db q.db   # what queries cost vs what they bought
+npx skills add 0xfth/grapevine-lite --skill voc-listener-lite
 ```
 
-## Design
+Or install the Python package from a source checkout:
 
-- **Estimate-first.** Every spend is preceded by a cost estimate (units,
-  wall time, time-to-first-hit, remaining budget, expected hits). The
-  operator nods before a single unit moves.
-- **Streaming.** Hits print as JSON lines the moment they're scored
-  (`{"type":"hit"|"progress"|"summary"}`); stderr carries the human
-  mirror. The agent watches live and stops early with `--max-new-hits`
-  or Ctrl-C.
-- **Kill-safe.** Episodes commit per video before their hit line prints.
-  A kill mid-run loses nothing; the next sweep resumes losslessly with
-  zero duplicates (tested).
-- **Most-promising-first.** Sweeps order videos by title-vocabulary match,
-  discovery-query strength, then recency — first useful hits in minutes,
-  completeness after.
-- **Honest accounting.** `fidelity` reports cost vs value from measured
-  history; estimates get sharper the more an area is queried.
-- **Credentials never touch the library.** API calls go through
-  `bin/yt_search.py` / `bin/yt_comments.py`, which use your key at call
-  time only — via `--api-key` / `YOUTUBE_API_KEY`, or the Secure Vault
-  surrogate on Muse-style agent runtimes.
+```bash
+git clone https://github.com/0xfth/grapevine-lite.git
+cd grapevine-lite
+python -m pip install .
+```
 
-The always-on daemon model was retired (estimate-first query engine only —
-no resident process, no schedule). `references/worked-example.md` walks a
-real query session end to end with measured numbers.
+Python 3.10 or later is required. The distribution name is `voc-listener-lite`; the command examples below use its compatible `python -m voc` entry point.
 
-## Lite vs Pro
+## Quick start
 
-| | Lite (free, MIT) | Pro ($10 one-time) |
-|---|---|---|
-| Listening loop (define → estimate → discover → sweep → inbox) | ✅ | ✅ |
-| Regex vocabulary scorer | ✅ | ✅ |
-| grep / diagnose / videos / simulate / fidelity | ✅ | ✅ |
-| BYOK (your YouTube key, never stored) | ✅ | ✅ |
-| Clef decision-model scorer | — | ✅ |
-| Triage status workflow | — | ✅ |
-| One-command research-report synthesis | — | ✅ |
+Set `YOUTUBE_API_KEY` to your own YouTube Data API v3 key, then define a small research area:
 
-**Lite listens. Pro works:**
-https://myagentlist.com/skills/voc-listener-pro
-<!-- URL SCHEME PENDING DOT CONFIRMATION -->
+```bash
+python -m voc add-area --name sourdough --db q.db \\
+  --queries "sourdough starter troubleshooting" \\
+  --person-terms baker "home baker" \\
+  --topic-terms sourdough starter \\
+  --depth shallow
+```
 
-## Auth
+Estimate first, review the estimate, and run collection only when authorized:
 
-Get a free YouTube Data API v3 key (Google Cloud Console) and hand it to
-the CLIs via `--api-key` or the `YOUTUBE_API_KEY` environment variable —
-used at call time only, never stored or logged. (On Muse-style agent
-runtimes the CLIs can instead use the Secure Vault surrogate; see
-`voc/auth.py`.) The library never persists a key value.
+```bash
+python -m voc estimate --area sourdough --db q.db
+python -m voc query --area sourdough --db q.db --yes --max-new-hits 10
+python -m voc inbox --area sourdough --db q.db
+python -m voc fidelity --db q.db
+```
+
+The query writes hit, progress, and summary records as JSON lines while it runs. You can stop a run early; completed video rows remain saved locally for later review. An early stop can leave the investigation incomplete.
+
+## What Lite includes
+
+- **Estimate-first workflow:** estimate YouTube discovery and comment polling before collection.
+- **Local regex scoring:** vocabulary and configured signals rank comments without sending them to an inference provider.
+- **Streaming results:** JSONL output makes hits and progress visible while a query runs.
+- **Local review:** SQLite stores areas, observations, and query history; `inbox` displays saved hits.
+- **Cost history:** `fidelity` compares estimated and observed query work for an area.
+- **YouTube only:** Lite queries YouTube comments. It does not include Grapevine Pro's broader source set.
+
+## Credentials and data
+
+Lite needs an operator-supplied YouTube Data API v3 key. Set it in `YOUTUBE_API_KEY` or provide it to the supported command-line tools at call time with `--api-key`. The library does not intentionally store the key in its SQLite research database. Requests go to Google's YouTube API, and collected observations are saved locally.
+
+There is no always-on daemon or schedule. You choose when to estimate and query.
+
+## Coverage limits
+
+Lite searches selected YouTube queries and comment threads; it does not cover all YouTube discussion or establish how representative a sample is. A zero-hit query can mean the search terms, chosen depth, or available comments missed the topic. Scores rank text for review and do not establish truth, identity, or prevalence.
+
+## Technical references
+
+- [Worked example](https://github.com/0xfth/grapevine-lite/blob/main/references/worked-example.md)
+- [MIT License](https://github.com/0xfth/grapevine-lite/blob/main/LICENSE)
+
+## Grapevine Pro status
+
+Grapevine Pro is in development and has no public install or purchase link yet. The older VOC Listener Pro Agensi listing is a separate predecessor product; its current version has not been confirmed. The details above describe Lite 1.0.0 and do not imply that the predecessor listing is a Grapevine Pro release.
