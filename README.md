@@ -26,7 +26,7 @@ Python 3.10 or later is required. The Python distribution keeps its compatibilit
 
 ## Run a first research question
 
-Make your YouTube Data API v3 key available to the process as **YOUTUBE_API_KEY** or through the supported call-time **--api-key** option. Define a small area with two to six concrete search phrases, terms that describe who and what you are investigating, and a collection depth:
+Set your YouTube Data API v3 key in the local environment as **YOUTUBE_API_KEY** before collection. Define a small area with two to six concrete search phrases, terms that describe who and what you are investigating, and a collection depth:
 
 ~~~bash
 python -m voc add-area --name sourdough --db q.db \
