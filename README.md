@@ -4,75 +4,73 @@ myagentlist-public-about: true
 
 # Grapevine Lite
 
-Grapevine Lite is a free, local tool for estimate-first research in YouTube comments. Define a question, see the expected work before querying, then review the observations that match your topic. Results stay in a local SQLite database, with source links preserved for follow-up.
+Investigate a focused question in YouTube comments with an estimate before collection, a local record of observations, and source links for follow-up.
 
-The public package is version **1.0.0** and uses the **MIT License**. The installed skill and Python compatibility namespace retain their earlier names: `voc-listener-lite` and `voc`.
+The public Lite release is version **1.0.0** under the **MIT License**. It uses local regex scoring and requires your own YouTube Data API v3 key.
 
-## Install
+## Install the agent skill
 
-Add the agent skill from the public repository:
+~~~bash
+npx skills add 0xfth/grapevine-lite --skill grapevine-lite
+~~~
 
-```bash
-npx skills add 0xfth/grapevine-lite --skill voc-listener-lite
-```
+## Install the Python package
 
-Or install the Python package from a source checkout:
-
-```bash
+~~~bash
 git clone https://github.com/0xfth/grapevine-lite.git
 cd grapevine-lite
 python -m pip install .
-```
+~~~
 
-Python 3.10 or later is required. The distribution name is `voc-listener-lite`; the command examples below use its compatible `python -m voc` entry point.
+Python 3.10 or later is required. The Python distribution keeps its compatibility name **voc-listener-lite**; import and command examples use **voc** and **python -m voc**. The agent skill has its own name, **grapevine-lite**.
 
-## Quick start
+## Run a first research question
 
-Set `YOUTUBE_API_KEY` to your own YouTube Data API v3 key, then define a small research area:
+Make your YouTube Data API v3 key available to the process as **YOUTUBE_API_KEY** or through the supported call-time **--api-key** option. Define a small area with two to six concrete search phrases, terms that describe who and what you are investigating, and a collection depth:
 
-```bash
-python -m voc add-area --name sourdough --db q.db \\
-  --queries "sourdough starter troubleshooting" \\
-  --person-terms baker "home baker" \\
-  --topic-terms sourdough starter \\
+~~~bash
+python -m voc add-area --name sourdough --db q.db \
+  --queries "sourdough starter troubleshooting" \
+  --person-terms baker "home baker" \
+  --topic-terms "sourdough starter" \
   --depth shallow
-```
+~~~
 
-Estimate first, review the estimate, and run collection only when authorized:
+Review the estimate before collection:
 
-```bash
+~~~bash
 python -m voc estimate --area sourdough --db q.db
+~~~
+
+After reviewing and approving that estimate, run a bounded collection and inspect the saved observations:
+
+~~~bash
 python -m voc query --area sourdough --db q.db --yes --max-new-hits 10
 python -m voc inbox --area sourdough --db q.db
 python -m voc fidelity --db q.db
-```
+~~~
 
-The query writes hit, progress, and summary records as JSON lines while it runs. You can stop a run early; completed video rows remain saved locally for later review. An early stop can leave the investigation incomplete.
+Query output streams hits, progress, and a summary as JSON lines. Stopping early keeps completed video results in the local database, but the resulting sample may be incomplete.
 
 ## What Lite includes
 
-- **Estimate-first workflow:** estimate YouTube discovery and comment polling before collection.
-- **Local regex scoring:** vocabulary and configured signals rank comments without sending them to an inference provider.
-- **Streaming results:** JSONL output makes hits and progress visible while a query runs.
-- **Local review:** SQLite stores areas, observations, and query history; `inbox` displays saved hits.
-- **Cost history:** `fidelity` compares estimated and observed query work for an area.
-- **YouTube only:** Lite queries YouTube comments. It does not include Grapevine Pro's broader source set.
+- Estimate-first, on-demand research over selected YouTube search phrases and comments.
+- Local regex scoring based on the configured vocabulary and quality signals; it does not send comments to an inference provider.
+- A local SQLite database for areas, observations, and query history.
+- An inbox for reviewing saved observations, with source links preserved for follow-up.
+- Helpers for checking saved results and query history, including grep, diagnose, videos, simulate, and fidelity.
 
-## Credentials and data
+Lite covers YouTube comments only. It does not run a background monitor or schedule collections. It does not include the broader source set or optional model scoring described for Grapevine Pro.
 
-Lite needs an operator-supplied YouTube Data API v3 key. Set it in `YOUTUBE_API_KEY` or provide it to the supported command-line tools at call time with `--api-key`. The library does not intentionally store the key in its SQLite research database. Requests go to Google's YouTube API, and collected observations are saved locally.
+## Data and coverage
 
-There is no always-on daemon or schedule. You choose when to estimate and query.
+Collections call the YouTube Data API using your key. The library does not intentionally store that key in its SQLite research database. Research data and query history are stored locally.
 
-## Coverage limits
+Results are limited to videos and comments reached by the chosen phrases, depth, timing, and API limits. A zero-hit run does not show that a topic is absent from YouTube. Scores help rank observations for review; they do not establish truth, identity, sentiment, or prevalence.
 
-Lite searches selected YouTube queries and comment threads; it does not cover all YouTube discussion or establish how representative a sample is. A zero-hit query can mean the search terms, chosen depth, or available comments missed the topic. Scores rank text for review and do not establish truth, identity, or prevalence.
-
-## Technical references
+## References
 
 - [Worked example](https://github.com/0xfth/grapevine-lite/blob/main/references/worked-example.md)
 - [MIT License](https://github.com/0xfth/grapevine-lite/blob/main/LICENSE)
 
-## Grapevine Pro status
-
-Grapevine Pro is in development and has no public install or purchase link yet. The older VOC Listener Pro Agensi listing is a separate predecessor product; its current version has not been confirmed. The details above describe Lite 1.0.0 and do not imply that the predecessor listing is a Grapevine Pro release.
+Grapevine Pro is a separate edition in development. This guide describes only the available Lite 1.0.0 release.
