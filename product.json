@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 2,
+  "id": "voc-lite",
+  "familyId": "grapevine",
+  "edition": "lite",
+  "status": "available",
+  "publicListing": true,
+  "displayName": "Grapevine",
+  "tagline": "Estimate-first research across selected public discussions.",
+  "description": "Grapevine is a local library and agent skill for investigating selected public discussions. Lite currently covers YouTube comments with estimate-first queries and local regex scoring. The upcoming Pro edition expands to selected community sources with bounded collection, evidence triage, and source-linked briefs. It runs on demand, not as an always-on service.",
+  "capabilities": [
+    "Estimate the work before querying YouTube comments.",
+    "Score observations locally with regex rules and review results in an inbox.",
+    "Run an on-demand research workflow without an always-on service."
+  ],
+  "version": "1.0.0",
+  "publicUrls": {},
+  "license": "MIT",
+  "offers": [
+    {
+      "edition": "lite",
+      "status": "available",
+      "label": "Get Lite — free",
+      "url": "https://github.com/0xfth/grapevine-lite",
+      "version": "1.0.0",
+      "price": {
+        "amount": 0,
+        "currency": "USD"
+      }
+    }
+  ]
+}
