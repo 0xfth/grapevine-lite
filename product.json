@@ -5,6 +5,7 @@
   "edition": "lite",
   "status": "available",
   "publicListing": true,
+  "lead": {"id":"nova","name":"Nova"},
   "displayName": "Grapevine",
   "tagline": "Estimate-first research across selected public discussions.",
   "description": "Grapevine helps researchers estimate, collect, and review source-linked public discussion evidence locally.",
